@@ -1,12 +1,15 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import { BeakerIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
+  const [errorMessage, setErrorMassage] = useState(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const auth = useAuth();
+  const router = useRouter();
 
   const submitHandle = (event) => {
     event.preventDefault();
@@ -16,10 +19,14 @@ export default function LoginPage() {
     auth
       .signIn(email, password)
       .then(() => {
-        console.log('Login successs');
+        router.push('/dashboard');
       })
-      .catch(() => {
-        alert('el usuario no existe');
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          setErrorMassage('El correo o la contraseña son icorretas.');
+        } else {
+          setErrorMassage(error.message);
+        }
       });
   };
 
@@ -115,6 +122,23 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
+          {errorMessage && (
+            <div className="error flex">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              {errorMessage}
+            </div>
+          )}
         </div>
       </div>
     </>

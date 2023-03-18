@@ -11,14 +11,14 @@ const endPoints = {
     getProducts: (limit, offset) =>
       `${API}/${VERSION}/products?limit=${limit}&offset=${offset}`,
     addProducts: `${API}/${VERSION}/products`,
+    allProducts: `${API}/${VERSION}/products`,
     updateProducts: (id) => `${API}/${VERSION}/products/${id}/`,
     deleteProducts: (id) => `${API}/${VERSION}/products/${id}/`,
   },
   categories: {
     getCategorieslist: `${API}/${VERSION}/categories/`,
     addCategory: `${API}/${VERSION}/categories/`,
-    getCategoriesItems: (id) =>
-      `${API}/${VERSION}/categories/${id}/products/`,
+    getCategoriesItems: (id) => `${API}/${VERSION}/categories/${id}/products/`,
     updateCategorieItems: (id) => `${API}/${VERSION}/categories/${id}/`,
   },
   files: {

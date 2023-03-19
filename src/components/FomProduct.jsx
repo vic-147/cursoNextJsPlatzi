@@ -1,8 +1,11 @@
 import { useRef } from 'react';
-import { addProduct } from '@/services/API/products';
+import { addProduct, updateProduct } from '@/services/API/products';
+import { useRouter } from 'next/router';
 
-export default function FormProduct({ setOpen, setAlert }) {
+export default function FormProduct({ setOpen, setAlert, product }) {
   const formRef = useRef(null);
+  const router = useRouter();
+  //console.log(product);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -15,24 +18,31 @@ export default function FormProduct({ setOpen, setAlert }) {
       images: [formData.get('images').name],
     };
     //console.log(data);
-    addProduct(data)
-      .then(() => {
-        setAlert({
-          active: true,
-          message: 'Product added successfully',
-          typr: 'success',
-          autoClose: false,
-        });
-        setOpen(false);
-      })
-      .catch((error) => {
-        setAlert({
-          active: true,
-          message: error.message,
-          type: ' error',
-          autoClose: false,
-        });
+
+    if (product) {
+      updateProduct(product.id, data).then(() => {
+        router.push('/dashboard/products');
       });
+    } else {
+      addProduct(data)
+        .then(() => {
+          setAlert({
+            active: true,
+            message: 'Product added successfully',
+            typr: 'success',
+            autoClose: false,
+          });
+          setOpen(false);
+        })
+        .catch((error) => {
+          setAlert({
+            active: true,
+            message: error.message,
+            type: ' error',
+            autoClose: false,
+          });
+        });
+    }
   };
 
   return (
@@ -48,6 +58,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                 Title
               </label>
               <input
+                defaultValue={product?.title}
                 type="text"
                 name="title"
                 id="title"
@@ -62,6 +73,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                 Price
               </label>
               <input
+                defaultValue={product?.price}
                 type="number"
                 name="price"
                 id="price"
@@ -78,6 +90,8 @@ export default function FormProduct({ setOpen, setAlert }) {
               <select
                 id="category"
                 name="category"
+                // se cambia el defaultValue por solo value en este caso para que funcione correctamente
+                value={product?.category?.id.toString()}
                 autoComplete="category-name"
                 className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               >
@@ -97,6 +111,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                 Description
               </label>
               <textarea
+                defaultValue={product?.description}
                 name="description"
                 id="description"
                 autoComplete="description"
@@ -132,6 +147,7 @@ export default function FormProduct({ setOpen, setAlert }) {
                       >
                         <span>Upload a file</span>
                         <input
+                          defaultValue={product?.images}
                           id="images"
                           name="images"
                           type="file"
